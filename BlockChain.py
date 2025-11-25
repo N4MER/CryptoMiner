@@ -15,6 +15,14 @@ class Block:
         self.hash = None
 
     @property
+    def nonce(self):
+        return self._nonce
+
+    @nonce.setter
+    def nonce(self, value):
+        self._nonce = value
+
+    @property
     def previous_hash(self):
         return self.previous_hash
 
