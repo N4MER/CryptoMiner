@@ -1,4 +1,5 @@
 import hashlib
+import threading
 import time
 
 class Block:
@@ -102,6 +103,8 @@ class BlockChain:
         Constructor for Block class.
         """
         self.chain = []
+        self.lock = threading.Lock()
+
 
     def append(self, block):
         """
@@ -109,4 +112,5 @@ class BlockChain:
         :param block:
         :return:
         """
-        self.chain.append(block)
+        with self.lock:
+            self.chain.append(block)
