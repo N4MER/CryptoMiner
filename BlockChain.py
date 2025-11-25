@@ -12,7 +12,22 @@ class Block:
         self._timestamp = time.time()
         self._nonce = 0
         self._difficulty = 5
-        self.hash = None
+        self._hash = None
+
+    @property
+    def hash(self):
+        return self._hash
+
+    @hash.setter
+    def hash(self, value):
+        if value is None or type(value) is not str or len(value) != 64:
+            raise TypeError("Hash must be a 64-character hex string.")
+
+        try:
+            int(value, 16)
+        except ValueError:
+            raise TypeError("Hash must contain valid hexadecimal characters.")
+        self._hash = value
 
     @property
     def nonce(self):
@@ -58,7 +73,7 @@ class Block:
         """
         return f"{self.previous_hash} | {self._timestamp} | {self._nonce}".encode()
 
-    def hash(self):
+    def hash_block(self):
         """
         Hashes string made from variable values of the block.
         :return: Hash of the string made from variable values.
