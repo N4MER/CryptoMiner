@@ -1,3 +1,5 @@
+from BlockChain import Block
+
 class Miner:
     def __init__(self, username):
         self._name = username
@@ -20,3 +22,11 @@ class Miner:
     @wallet.setter
     def wallet(self, value):
         self._wallet = value
+
+    def mine(self, block, nonce, block_chain):
+        block.nonce = nonce
+        if block.compare_hash():
+            self._wallet += block.reward
+            block_chain.append(Block(block.hash))
+        else:
+            nonce += 1
