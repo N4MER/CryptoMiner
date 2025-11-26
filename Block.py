@@ -1,5 +1,4 @@
 import hashlib
-import time
 
 class Block:
     def __init__(self, previous_hash):
@@ -10,7 +9,7 @@ class Block:
         self._previous_hash = previous_hash
         self.reward = 1
         self._nonce = 0
-        self._difficulty = 5
+        self._difficulty = 4
         self._hash = None
 
     @property
@@ -94,19 +93,3 @@ class Block:
             return True
         return False
 
-
-# class Blockchain:
-#     def __init__(self):
-#         """
-#         Constructor for Block class.
-#         """
-#         self.chain = []
-#
-#
-#     def append(self, block):
-#         """
-#         Appends a block to the BlockChain.
-#         :param block:
-#         :return:
-#         """
-#         self.chain.append(block)
