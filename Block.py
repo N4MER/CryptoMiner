@@ -1,5 +1,4 @@
 import hashlib
-import threading
 import time
 
 class Block:
@@ -10,7 +9,6 @@ class Block:
         """
         self._previous_hash = previous_hash
         self.reward = 1
-        self._timestamp = time.time()
         self._nonce = 0
         self._difficulty = 5
         self._hash = None
@@ -72,7 +70,7 @@ class Block:
         Converts variable values in block to string.
         :return: variable values of the block converted to string.
         """
-        return f"{self.previous_hash} | {self._timestamp} | {self._nonce}".encode()
+        return f"{self.previous_hash} | {self._nonce}".encode()
 
     def hash_block(self):
         """
@@ -90,25 +88,25 @@ class Block:
         :return: True if int value of the block is smaller than int value of the target, and False otherwise.
         """
         target = ("0" * self._difficulty) + ("f" * (64 - self._difficulty))
-        hash = self.hash_block()
-        if int(hash, 16) < int(target, 16):
-            self.hash = hash
+        block_hash = self.hash_block()
+        if int(block_hash, 16) < int(target, 16):
+            self.hash = block_hash
             return True
         return False
 
 
-class Blockchain:
-    def __init__(self):
-        """
-        Constructor for Block class.
-        """
-        self.chain = []
-
-
-    def append(self, block):
-        """
-        Appends a block to the BlockChain.
-        :param block:
-        :return:
-        """
-        self.chain.append(block)
+# class Blockchain:
+#     def __init__(self):
+#         """
+#         Constructor for Block class.
+#         """
+#         self.chain = []
+#
+#
+#     def append(self, block):
+#         """
+#         Appends a block to the BlockChain.
+#         :param block:
+#         :return:
+#         """
+#         self.chain.append(block)
