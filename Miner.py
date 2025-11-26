@@ -4,6 +4,7 @@ class Miner:
     def __init__(self, username):
         self._name = username
         self._wallet = 0
+        self.blockchain = Blockchain()
 
     @property
     def name(self):
@@ -23,10 +24,10 @@ class Miner:
     def wallet(self, value):
         self._wallet = value
 
-    def mine(self, block, nonce, block_chain):
+    def mine(self, block, nonce):
         block.nonce = nonce
         if block.compare_hash():
             self._wallet += block.reward
-            block_chain.append(Block(block.hash))
+            self.blockchain.append(Block(block.hash))
         else:
             nonce += 1
