@@ -1,4 +1,4 @@
-from BlockChain import Block
+from Blockchain import Block, Blockchain
 
 class Miner:
     def __init__(self, username):

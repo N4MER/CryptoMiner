@@ -97,7 +97,7 @@ class Block:
         return False
 
 
-class BlockChain:
+class Blockchain:
     def __init__(self):
         """
         Constructor for Block class.
