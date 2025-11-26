@@ -58,7 +58,7 @@ class Block:
         except ValueError:
             raise TypeError("Previous hash must contain valid hexadecimal characters.")
 
-        self.previous_hash = value
+        self._previous_hash = value
 
     def increment_nonce(self):
         """
@@ -103,7 +103,6 @@ class Blockchain:
         Constructor for Block class.
         """
         self.chain = []
-        self.lock = threading.Lock()
 
 
     def append(self, block):
@@ -112,5 +111,4 @@ class Blockchain:
         :param block:
         :return:
         """
-        with self.lock:
-            self.chain.append(block)
+        self.chain.append(block)
