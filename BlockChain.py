@@ -40,7 +40,7 @@ class Block:
 
     @property
     def previous_hash(self):
-        return self.previous_hash
+        return self._previous_hash
 
     @previous_hash.setter
     def previous_hash(self, value):
@@ -90,7 +90,7 @@ class Block:
         :return: True if int value of the block is smaller than int value of the target, and False otherwise.
         """
         target = ("0" * self._difficulty) + ("f" * (64 - self._difficulty))
-        hash = self.hash()
+        hash = self.hash_block()
         if int(hash, 16) < int(target, 16):
             self.hash = hash
             return True
