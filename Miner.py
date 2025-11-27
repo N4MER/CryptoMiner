@@ -60,8 +60,14 @@ class Miner:
 
     def mine(self, blockchain, lock, timestamp, total_miners):
         k = 0
+        last_seen_hash = len(blockchain)
         while True:
+            if blockchain[-1].hash != last_seen_hash:
+                last_seen_hash = blockchain[-1].hash
+                k = 0
+
             nonce = self.miner_id + k * total_miners
+
             with lock:
                 blockchain_length = len(blockchain)
                 last_block_in_blockchain = blockchain[-1]
@@ -72,11 +78,12 @@ class Miner:
             hashed_new_block = new_block.hash_block(nonce)
             k+=1
 
+
             if new_block.compare_hash(hashed_new_block):
                 with lock:
 
-                    if len(blockchain) != blockchain_length:
-                        new_block = Block(blockchain[-1].hash, timestamp.value)
+                    if blockchain[-1].hash != last_seen_hash:
+                        last_seen_hash = blockchain[-1].hash
                         k = 0
                         continue
 
@@ -95,18 +102,21 @@ class Miner:
 
 if __name__ == '__main__':
 
+    max_processes = multiprocessing.cpu_count()
+    print(max_processes)
+
     mining_group = MiningGroup()
 
     m1 = Miner('m1', 0)
-    # m2 = Miner('m2', 1)
-    # m3 = Miner('m3', 2)
-    # m4 = Miner('m4', 3)
-    # m5 = Miner('m5', 4)
-    # m6 = Miner('m6', 5)
-    # m7 = Miner('m7', 6)
-    # m8 = Miner('m8', 7)
-    # m9 = Miner('m9', 8)
-    # m10 = Miner('m10', 9)
+    m2 = Miner('m2', 1)
+    m3 = Miner('m3', 2)
+    m4 = Miner('m4', 3)
+    m5 = Miner('m5', 4)
+    m6 = Miner('m6', 5)
+    m7 = Miner('m7', 6)
+    m8 = Miner('m8', 7)
+    m9 = Miner('m9', 8)
+    m10 = Miner('m10', 9)
 
     starting_block = Block('0'*64, time.time())
     starting_block.hash = '0'*64
@@ -114,14 +124,14 @@ if __name__ == '__main__':
     mining_group.blockchain.append(starting_block)
 
     mining_group.add_miner(m1)
-    # mining_group.add_miner(m2)
-    # mining_group.add_miner(m3)
-    # mining_group.add_miner(m4)
-    # mining_group.add_miner(m5)
-    # mining_group.add_miner(m6)
-    # mining_group.add_miner(m7)
-    # mining_group.add_miner(m8)
-    # mining_group.add_miner(m9)
-    # mining_group.add_miner(m10)
+    mining_group.add_miner(m2)
+    mining_group.add_miner(m3)
+    mining_group.add_miner(m4)
+    mining_group.add_miner(m5)
+    mining_group.add_miner(m6)
+    mining_group.add_miner(m7)
+    mining_group.add_miner(m8)
+    mining_group.add_miner(m9)
+    mining_group.add_miner(m10)
 
     mining_group.run()
