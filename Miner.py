@@ -1,5 +1,4 @@
 import multiprocessing
-import time
 
 from Block import Block
 
@@ -59,19 +58,20 @@ class Miner:
     def mine(self, blockchain, lock, nonce):
         while True:
             with lock:
-                block = blockchain[-1]
+                current_block = blockchain[-1]
+                current_nonce = nonce.value
                 nonce.value += 1
 
-            block_hash = block.hash_block(nonce.value)
-            if block.compare_hash(block_hash):
-                self._wallet += block.reward
-                print(f'{self.name} mined crypto! wallet: {self.wallet} nonce: {nonce.value}')
+            hashed_current_block = current_block.hash_block(current_nonce)
+            if current_block.compare_hash(hashed_current_block):
                 with lock:
+                    self._wallet += current_block.reward
+                    print(f'{self.name} mined crypto! wallet: {self.wallet} nonce: {current_nonce}')
                     nonce.value = 0
-                    new_block = Block(block.hash)
-                    new_block.hash = block_hash
+                    new_block = Block(current_block.hash)
+                    new_block.hash = hashed_current_block
                     blockchain.append(new_block)
-                    Miner.print_blockchain(blockchain)
+                    #Miner.print_blockchain(blockchain)
 
     @staticmethod
     def print_blockchain(blockchain):

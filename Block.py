@@ -11,7 +11,7 @@ class Block:
         self._previous_hash = previous_hash
         self.reward = 1
         self._time = time.time()
-        self._difficulty = 3
+        self._difficulty = 4
         self._hash = None
 
     @property
