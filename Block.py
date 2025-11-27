@@ -3,16 +3,24 @@ import time
 
 
 class Block:
-    def __init__(self, previous_hash):
+    def __init__(self, previous_hash, timestamp):
         """
         Constructor for Block class.
         :param previous_hash: Hash of the previous block.
         """
         self._previous_hash = previous_hash
         self.reward = 1
-        self._time = time.time()
+        self._timestamp = timestamp
         self._difficulty = 4
         self._hash = None
+
+    @property
+    def timestamp(self):
+        return self._timestamp
+
+    @timestamp.setter
+    def timestamp(self, value):
+        self._timestamp = value
 
     @property
     def hash(self):
@@ -57,7 +65,7 @@ class Block:
         Converts variable values in block to string.
         :return: variable values of the block converted to string.
         """
-        return f"{self.previous_hash} | {str(self._time)}".encode()
+        return f"{self.previous_hash} | {str(self._timestamp)}".encode()
 
     def hash_block(self, nonce):
         """
@@ -80,5 +88,4 @@ class Block:
         return False
 
     def __str__(self):
-        return f"previous hash: {self.previous_hash} | time: {str(self._time)} | hash: {self.hash}"
-
+        return f"previous hash: {self.previous_hash} | time: {str(self._timestamp)} | hash: {self.hash}"

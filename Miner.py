@@ -1,10 +1,12 @@
 import multiprocessing
+import time
 
 from Block import Block
 
 class MiningGroup:
     def __init__(self):
         self.nonce = multiprocessing.Value("i", 0)
+        self.timestamp = multiprocessing.Value("d", time.time())
         self.blockchain = multiprocessing.Manager().list()
         self.miners = []
         self.lock = multiprocessing.Lock()
@@ -20,7 +22,7 @@ class MiningGroup:
 
     def create_threads(self):
         for miner in self.miners:
-            p = multiprocessing.Process(target=miner.mine, args=(self.blockchain, self.lock, self.nonce))
+            p = multiprocessing.Process(target=miner.mine, args=(self.blockchain, self.lock, self.nonce, self.timestamp))
             self.processes.append(p)
 
     def start_all(self):
@@ -55,27 +57,33 @@ class Miner:
     def wallet(self, value):
         self._wallet = value
 
-    def mine(self, blockchain, lock, nonce):
+    def mine(self, blockchain, lock, nonce, timestamp):
         while True:
             with lock:
+                blockchain_length = len(blockchain)
                 last_block_in_blockchain = blockchain[-1]
-                new_block = Block(last_block_in_blockchain.hash)
+                new_block = Block(last_block_in_blockchain.hash, timestamp.value)
                 current_nonce = nonce.value
+                #print(f'{self.name}: {current_nonce} block: {str(new_block)}')
                 nonce.value += 1
 
-            hashed_current_block = new_block.hash_block(current_nonce)
-            if new_block.compare_hash(hashed_current_block):
+            #new_block = Block(last_block_in_blockchain.hash, timestamp.value)
+            hashed_new_block = new_block.hash_block(current_nonce)
+
+            if new_block.compare_hash(hashed_new_block):
                 with lock:
 
-                    if blockchain[-1] is not last_block_in_blockchain:
+                    if len(blockchain) != blockchain_length:
+                        new_block = Block(blockchain[-1].hash, timestamp.value)
                         continue
 
                     self._wallet += new_block.reward
                     print(f'{self.name} mined crypto! wallet: {self.wallet} nonce: {current_nonce}')
                     nonce.value = 0
-                    new_block.hash = hashed_current_block
+                    timestamp.value = time.time()
+                    new_block.hash = hashed_new_block
                     blockchain.append(new_block)
-                    #Miner.print_blockchain(blockchain)
+                    Miner.print_blockchain(blockchain)
 
     @staticmethod
     def print_blockchain(blockchain):
@@ -89,8 +97,8 @@ if __name__ == '__main__':
     m3 = Miner('m3')
     m4 = Miner('m4')
 
-    starting_block = Block('0'*64)
-    starting_block.hash = starting_block.hash_block(0)
+    starting_block = Block('0'*64, time.time())
+    starting_block.hash = '0'*64
 
     mining_group.blockchain.append(starting_block)
 
