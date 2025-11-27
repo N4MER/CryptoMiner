@@ -4,7 +4,7 @@ from Block import Block
 
 class MiningGroup:
     def __init__(self):
-        #self.nonce = multiprocessing.Value("i", 0)
+        self.nonce = multiprocessing.Value("i", 0)
         self.blockchain = multiprocessing.Manager().list()
         self.miners = []
         self.lock = multiprocessing.Lock()
@@ -20,7 +20,7 @@ class MiningGroup:
 
     def create_threads(self):
         for miner in self.miners:
-            p = multiprocessing.Process(target=miner.mine, args=(self.blockchain, self.lock))
+            p = multiprocessing.Process(target=miner.mine, args=(self.blockchain, self.lock, self.nonce))
             self.processes.append(p)
 
     def start_all(self):
@@ -55,27 +55,21 @@ class Miner:
     def wallet(self, value):
         self._wallet = value
 
-    def mine(self, blockchain, lock):
+    def mine(self, blockchain, lock, nonce):
         while True:
             with lock:
                 block = blockchain[-1]
                 old_block = block
-                #print(f'{self.name} is mining {old_block.nonce}')
-                block.nonce += 1
+                nonce.value += 1
                 blockchain[-1] = block
 
-            if block.compare_hash():
+            if block.compare_hash(nonce.value):
                 self._wallet += old_block.reward
-                print(f'{self.name} mined crypto! wallet: {self.wallet} nounce: {old_block.nonce}')
+                print(f'{self.name} mined crypto! wallet: {self.wallet} nonce: {nonce.value}')
                 with lock:
                     blockchain[-1] = old_block
                     blockchain.append(Block(old_block.hash))
-            # else:
-            #     print(f'{self.name} didnt find crypto at {old_block.nonce}')
 
-    # def run(self):
-    #     while True:
-    #
 if __name__ == '__main__':
     mining_group = MiningGroup()
     m1 = Miner('m1')

@@ -8,7 +8,7 @@ class Block:
         """
         self._previous_hash = previous_hash
         self.reward = 1
-        self._nonce = 0
+        #self._nonce = 0
         self._difficulty = 4
         self._hash = None
 
@@ -69,16 +69,16 @@ class Block:
         Converts variable values in block to string.
         :return: variable values of the block converted to string.
         """
-        return f"{self.previous_hash} | {self._nonce}".encode()
+        return f"{self.previous_hash}".encode()
 
-    def hash_block(self):
+    def hash_block(self, nonce):
         """
         Hashes string made from variable values of the block.
         :return: Hash of the string made from variable values.
         """
-        return hashlib.sha256(self.get_value()).hexdigest()
+        return hashlib.sha256(self.get_value()+str(nonce).encode()).hexdigest()
 
-    def compare_hash(self):
+    def compare_hash(self, nonce):
         """
         Compares values of the hashed block with a difficulty based target.
 
@@ -87,7 +87,7 @@ class Block:
         :return: True if int value of the block is smaller than int value of the target, and False otherwise.
         """
         target = ("0" * self._difficulty) + ("f" * (64 - self._difficulty))
-        block_hash = self.hash_block()
+        block_hash = self.hash_block(nonce)
         if int(block_hash, 16) < int(target, 16):
             self.hash = block_hash
             return True
