@@ -58,17 +58,21 @@ class Miner:
     def mine(self, blockchain, lock, nonce):
         while True:
             with lock:
-                current_block = blockchain[-1]
+                last_block_in_blockchain = blockchain[-1]
+                new_block = Block(last_block_in_blockchain.hash)
                 current_nonce = nonce.value
                 nonce.value += 1
 
-            hashed_current_block = current_block.hash_block(current_nonce)
-            if current_block.compare_hash(hashed_current_block):
+            hashed_current_block = new_block.hash_block(current_nonce)
+            if new_block.compare_hash(hashed_current_block):
                 with lock:
-                    self._wallet += current_block.reward
+
+                    if blockchain[-1] is not last_block_in_blockchain:
+                        continue
+
+                    self._wallet += new_block.reward
                     print(f'{self.name} mined crypto! wallet: {self.wallet} nonce: {current_nonce}')
                     nonce.value = 0
-                    new_block = Block(current_block.hash)
                     new_block.hash = hashed_current_block
                     blockchain.append(new_block)
                     #Miner.print_blockchain(blockchain)
