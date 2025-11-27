@@ -1,4 +1,6 @@
 import hashlib
+import time
+
 
 class Block:
     def __init__(self, previous_hash):
@@ -8,8 +10,8 @@ class Block:
         """
         self._previous_hash = previous_hash
         self.reward = 1
-        #self._nonce = 0
-        self._difficulty = 4
+        self._time = time.time()
+        self._difficulty = 3
         self._hash = None
 
     @property
@@ -26,14 +28,6 @@ class Block:
         except ValueError:
             raise TypeError("Hash must contain valid hexadecimal characters.")
         self._hash = value
-
-    @property
-    def nonce(self):
-        return self._nonce
-
-    @nonce.setter
-    def nonce(self, value):
-        self._nonce = value
 
     @property
     def previous_hash(self):
@@ -57,19 +51,13 @@ class Block:
 
         self._previous_hash = value
 
-    def increment_nonce(self):
-        """
-        Increments the nonce.
-        :return:
-        """
-        self._nonce += 1
 
     def get_value(self):
         """
         Converts variable values in block to string.
         :return: variable values of the block converted to string.
         """
-        return f"{self.previous_hash}".encode()
+        return f"{self.previous_hash} | {str(self._time)}".encode()
 
     def hash_block(self, nonce):
         """
@@ -78,7 +66,7 @@ class Block:
         """
         return hashlib.sha256(self.get_value()+str(nonce).encode()).hexdigest()
 
-    def compare_hash(self, nonce):
+    def compare_hash(self, block_hash):
         """
         Compares values of the hashed block with a difficulty based target.
 
@@ -87,9 +75,10 @@ class Block:
         :return: True if int value of the block is smaller than int value of the target, and False otherwise.
         """
         target = ("0" * self._difficulty) + ("f" * (64 - self._difficulty))
-        block_hash = self.hash_block(nonce)
         if int(block_hash, 16) < int(target, 16):
-            self.hash = block_hash
             return True
         return False
+
+    def __str__(self):
+        return f"previous hash: {self.previous_hash} | time: {str(self._time)} | hash: {self.hash}"
 
